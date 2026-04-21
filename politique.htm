@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Politique de Confidentialité | StatPRO</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================================================
+           VARIABLES & RESET
+           ========================================================================== */
+        :root {
+            --primary: #2563eb; 
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --secondary: #0f172a;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --bg-body: #f8fafc;
+            --bg-white: #ffffff;
+            --border: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --radius-lg: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-dark); line-height: 1.8; }
+        
+        .container { max-width: 900px; margin: 0 auto; padding: 0 20px; }
+
+        /* ==========================================================================
+           NAVIGATION 
+           ========================================================================== */
+        .navbar {
+            background-color: var(--bg-white); border-bottom: 1px solid var(--border);
+            padding: 15px 0; position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow-sm);
+        }
+        .nav-flex { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; color: var(--secondary); text-decoration: none; font-weight: 800; display: flex; align-items: center; gap: 10px;}
+        .logo span { color: var(--primary); }
+        .back-btn { color: var(--text-muted); text-decoration: none; font-weight: 500; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .back-btn:hover { color: var(--primary); }
+
+        /* ==========================================================================
+           HERO SECTION
+           ========================================================================== */
+        .hero {
+            background-color: var(--bg-white); padding: 60px 20px; text-align: center;
+            border-bottom: 1px solid var(--border); margin-bottom: 40px;
+            background-image: radial-gradient(circle at center, var(--primary-light) 0%, transparent 70%);
+        }
+        .hero h1 {
+            font-size: 2.8rem; font-weight: 800; margin-bottom: 15px; letter-spacing: -1px;
+            color: var(--secondary);
+        }
+        .hero p { font-size: 1.1rem; color: var(--text-muted); }
+
+        /* ==========================================================================
+           POLICY CONTENT
+           ========================================================================== */
+        .content-card {
+            background: var(--bg-white);
+            border-radius: var(--radius-lg);
+            padding: 50px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border);
+            margin-bottom: 60px;
+        }
+
+        .content-card h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .content-card h2:first-child { margin-top: 0; }
+        .content-card p { margin-bottom: 15px; color: var(--text-muted); font-size: 1.05rem; }
+        .content-card ul { margin-bottom: 20px; padding-left: 20px; color: var(--text-muted); }
+        .content-card li { margin-bottom: 10px; }
+        
+        .highlight-box {
+            background-color: var(--primary-light);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+        .highlight-box p { margin: 0; color: var(--secondary); font-weight: 500; }
+
+        footer { text-align: center; padding: 40px 0; color: var(--text-muted); border-top: 1px solid var(--border); }
+
+        @media (max-width: 768px) {
+            .content-card { padding: 30px 20px; }
+            .hero h1 { font-size: 2.2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-flex">
+            <a href="index.htm" class="logo"><i class="fas fa-chart-area" style="color: var(--primary);"></i> Stat<span>PRO</span></a>
+            <a href="index.htm" class="back-btn"><i class="fas fa-home"></i> Accueil</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <h1>Politique de Confidentialité</h1>
+            <p>Dernière mise à jour : <span id="current-date"></span></p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="content-card">
+            
+            <p>Bienvenue sur <strong>StatPRO</strong>. La protection de vos données personnelles est une priorité pour nous. Cette politique de confidentialité explique comment nous collectons, utilisons et protégeons vos informations lorsque vous visitez notre site web.</p>
+
+            <h2><i class="fas fa-database"></i> 1. Collecte des données de calcul</h2>
+            <p>StatPRO est conçu pour être un outil sécurisé. Les données statistiques (séries de nombres, hypothèses, etc.) que vous saisissez dans nos différents outils (Statistiques Descriptives, ANOVA, Khi-Deux) sont traitées <strong>localement sur votre navigateur (Client-side)</strong>.</p>
+            <p>Nous ne stockons, ne sauvegardons ni ne transmettons vos données de calcul à aucun serveur externe. Une fois la page fermée ou rafraîchie, vos données sont définitivement effacées de la mémoire.</p>
+
+            <h2><i class="fas fa-cookie-bite"></i> 2. Utilisation des Cookies et Publicité (Google AdSense)</h2>
+            <p>Afin de maintenir l'accès gratuit à nos outils, StatPRO utilise des services tiers pour afficher des annonces publicitaires, notamment <strong>Google AdSense</strong>. Ces services utilisent des cookies pour diffuser des annonces pertinentes en fonction de vos visites antérieures sur notre site ou d'autres sites web.</p>
+            <ul>
+                <li>Google utilise des cookies publicitaires pour diffuser des annonces ciblées.</li>
+                <li>Vous pouvez désactiver la publicité personnalisée de Google en visitant les <a href="https://myadcenter.google.com/" target="_blank" style="color: var(--primary);">Paramètres des annonces Google</a>.</li>
+                <li>Des fournisseurs tiers ou des réseaux publicitaires peuvent également utiliser des cookies pour évaluer l'efficacité de leurs publicités.</li>
+            </ul>
+
+            <div class="highlight-box">
+                <p><i class="fas fa-info-circle"></i> Note : En continuant à utiliser StatPRO, vous consentez à l'utilisation de ces cookies à des fins publicitaires et analytiques.</p>
+            </div>
+
+            <h2><i class="fas fa-chart-line"></i> 3. Outils d'Analyse (Analytics)</h2>
+            <p>Nous pouvons recueillir des informations non nominatives (comme le type de navigateur, le système d'exploitation, la durée de la visite, et les pages consultées) à l'aide d'outils d'analyse. Ces données nous aident à améliorer la performance de nos outils et l'expérience utilisateur.</p>
+
+            <h2><i class="fas fa-shield-alt"></i> 4. Sécurité</h2>
+            <p>Bien que nous ne stockions pas vos données de saisie, le site lui-même est hébergé sur des serveurs sécurisés (GitHub Pages) qui utilisent le protocole HTTPS pour garantir que votre connexion à notre site est cryptée et sécurisée.</p>
+
+            <h2><i class="fas fa-envelope"></i> 5. Nous Contacter</h2>
+            <p>Si vous avez des questions ou des préoccupations concernant notre politique de confidentialité ou le fonctionnement de nos outils statistiques, n'hésitez pas à nous contacter.</p>
+            
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 StatPRO - Développé avec passion pour l'analyse de données.</p>
+    </footer>
+
+    <script>
+        // Mettre à jour la date automatiquement
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('fr-FR', options);
+    </script>
+</body>
+</html>
