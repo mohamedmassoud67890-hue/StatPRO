@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse de Variance (ANOVA) | StatPro Premium</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================================================
+           VARIABLES & RESET
+           ========================================================================== */
+        :root {
+            --primary: #2563eb; 
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --secondary: #0f172a;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --bg-body: #f8fafc;
+            --bg-white: #ffffff;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --radius-lg: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-dark); line-height: 1.6; }
+        
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+
+        /* ==========================================================================
+           NAVIGATION 
+           ========================================================================== */
+        .navbar {
+            background-color: var(--bg-white); border-bottom: 1px solid var(--border);
+            padding: 15px 0; position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow-sm);
+        }
+        .nav-flex { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; color: var(--secondary); text-decoration: none; font-weight: 800; display: flex; align-items: center; gap: 10px;}
+        .logo span { color: var(--primary); }
+        .back-btn { color: var(--text-muted); text-decoration: none; font-weight: 500; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .back-btn:hover { color: var(--primary); }
+
+        /* ==========================================================================
+           HERO SECTION
+           ========================================================================== */
+        .hero {
+            background-color: var(--bg-white); padding: 70px 20px; text-align: center;
+            border-bottom: 1px solid var(--border); margin-bottom: 40px;
+            background-image: radial-gradient(circle at center, #eff6ff 0%, transparent 70%);
+        }
+        .hero-icon {
+            font-size: 3.5rem; margin-bottom: 25px; display: inline-flex;
+            background: linear-gradient(135deg, var(--primary), #0ea5e9);
+            color: white; padding: 25px; border-radius: 24px;
+            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+        }
+        .hero h1 {
+            font-size: 3.2rem; font-weight: 800; margin-bottom: 15px; letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 700px; margin: 0 auto; line-height: 1.8; }
+
+        /* ==========================================================================
+           TABS SYSTEM
+           ========================================================================== */
+        .tab-buttons { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .tab-btn {
+            background: var(--bg-white); border: 2px solid var(--border); padding: 12px 30px;
+            font-size: 1.05rem; font-weight: 600; color: var(--text-muted); cursor: pointer;
+            border-radius: 50px; transition: all 0.3s ease;
+        }
+        .tab-btn:hover { border-color: var(--primary-light); color: var(--primary); }
+        .tab-btn.active { background: var(--secondary); color: white; border-color: var(--secondary); box-shadow: var(--shadow-md); }
+        
+        .tab-content { display: none; animation: slideUp 0.4s ease-out; }
+        .tab-content.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ==========================================================================
+           FORM & INPUTS
+           ========================================================================== */
+        .calculator-card { background: var(--bg-white); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-lg); border: 1px solid var(--border); }
+        .section-title { font-size: 1.2rem; color: var(--secondary); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid var(--primary-light); padding-bottom: 10px;}
+        
+        .group-card {
+            background: var(--bg-body); border: 1px solid var(--border); border-radius: var(--radius-md);
+            padding: 20px; margin-bottom: 20px;
+        }
+        .group-header { font-weight: 700; color: var(--primary); margin-bottom: 15px; font-size: 1.1rem; }
+        
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-weight: 600; color: var(--secondary); font-size: 0.95rem; }
+        .form-group label .symbol { font-family: 'Fira Code', monospace; color: var(--primary); background: var(--primary-light); padding: 2px 6px; border-radius: 4px;}
+        
+        .form-control {
+            padding: 12px 15px; border: 2px solid var(--border); border-radius: var(--radius-md);
+            font-size: 1rem; font-family: 'Inter', sans-serif; transition: 0.3s; outline: none;
+            background-color: var(--bg-white);
+        }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
+        
+        .btn-submit {
+            background: var(--primary); color: white; border: none; padding: 18px 30px;
+            font-size: 1.15rem; font-weight: 700; border-radius: var(--radius-md); width: 100%;
+            cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px;
+            margin-top: 20px;
+        }
+        .btn-submit:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+        /* ==========================================================================
+           RESULTS SECTION & ANOVA TABLE
+           ========================================================================== */
+        #result-section { display: none; margin-top: 40px; border-top: 2px dashed var(--border); padding-top: 40px; }
+        
+        .anova-table-wrapper { overflow-x: auto; margin-bottom: 30px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); }
+        .anova-table { width: 100%; border-collapse: collapse; background: var(--bg-white); text-align: left; }
+        .anova-table th, .anova-table td { padding: 15px 20px; border: 1px solid var(--border); }
+        .anova-table th { background: var(--secondary); color: white; font-weight: 600; }
+        .anova-table tr:nth-child(even) { background: var(--bg-body); }
+        .anova-table .highlight { font-weight: bold; color: var(--primary); background: var(--primary-light); }
+
+        .math-steps {
+            background: var(--secondary); color: #38bdf8; padding: 25px; border-radius: var(--radius-md);
+            font-family: 'Fira Code', monospace; font-size: 1.05rem; line-height: 1.8; margin-bottom: 20px; overflow-x: auto;
+        }
+        .math-steps span.white { color: white; }
+        .math-steps span.yellow { color: #fde047; }
+        .math-steps span.comment { color: #94a3b8; font-style: italic; }
+
+        /* ==========================================================================
+           THEORY CARDS
+           ========================================================================== */
+        .theory-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .theory-card { background: var(--bg-white); padding: 30px; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .theory-card h3 { color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--primary-light); padding-bottom: 10px; }
+        
+        footer { text-align: center; padding: 40px 0; color: var(--text-muted); margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-flex">
+            <a href="#" class="logo"><i class="fas fa-chart-area" style="color: var(--primary); margin-right: 8px;"></i> MM <span>Center</span></a>
+            <a href="#" class="back-btn"><i class="fas fa-arrow-left"></i> Retour</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <div class="hero-icon">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <h1>Analyse de Variance (ANOVA)</h1>
+            <p>Effectuez une ANOVA à un facteur (One-Way ANOVA) pour comparer les moyennes de 3 groupes avec la construction complète du tableau d'analyse.</p>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('calculateur', this)"><i class="fas fa-calculator"></i> Simulateur ANOVA</button>
+            <button class="tab-btn" onclick="switchTab('cours', this)"><i class="fas fa-book-open"></i> Rappel Théorique</button>
+        </div>
+
+        <div id="calculateur" class="tab-content active">
+            <div class="calculator-card">
+                <form id="anovaForm">
+                    
+                    <h3 class="section-title"><i class="fas fa-layer-group"></i> Données des Échantillons (3 Groupes)</h3>
+                    
+                    <div class="group-card">
+                        <div class="group-header">Groupe 1 (Traitement A)</div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Taille <span class="symbol">n₁</span></label>
+                                <input type="number" id="n1" class="form-control" required min="2" value="10">
+                            </div>
+                            <div class="form-group">
+                                <label>Moyenne <span class="symbol">x̄₁</span></label>
+                                <input type="number" step="any" id="m1" class="form-control" required value="85">
+                            </div>
+                            <div class="form-group">
+                                <label>Variance <span class="symbol">s₁²</span></label>
+                                <input type="number" step="any" id="v1" class="form-control" required value="20">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="group-card">
+                        <div class="group-header">Groupe 2 (Traitement B)</div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Taille <span class="symbol">n₂</span></label>
+                                <input type="number" id="n2" class="form-control" required min="2" value="10">
+                            </div>
+                            <div class="form-group">
+                                <label>Moyenne <span class="symbol">x̄₂</span></label>
+                                <input type="number" step="any" id="m2" class="form-control" required value="92">
+                            </div>
+                            <div class="form-group">
+                                <label>Variance <span class="symbol">s₂²</span></label>
+                                <input type="number" step="any" id="v2" class="form-control" required value="25">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="group-card">
+                        <div class="group-header">Groupe 3 (Traitement C)</div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Taille <span class="symbol">n₃</span></label>
+                                <input type="number" id="n3" class="form-control" required min="2" value="10">
+                            </div>
+                            <div class="form-group">
+                                <label>Moyenne <span class="symbol">x̄₃</span></label>
+                                <input type="number" step="any" id="m3" class="form-control" required value="78">
+                            </div>
+                            <div class="form-group">
+                                <label>Variance <span class="symbol">s₃²</span></label>
+                                <input type="number" step="any" id="v3" class="form-control" required value="18">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-magic"></i> Générer le Tableau ANOVA
+                    </button>
+                </form>
+
+                <div id="result-section">
+                    <h2 style="color: var(--secondary); text-align: center; margin-bottom: 25px;">Résultats de l'Analyse (ANOVA)</h2>
+                    
+                    <div class="anova-table-wrapper">
+                        <table class="anova-table">
+                            <thead>
+                                <tr>
+                                    <th>Source de Variation</th>
+                                    <th>Somme des Carrés (SS)</th>
+                                    <th>Degrés de Liberté (df)</th>
+                                    <th>Carré Moyen (MS)</th>
+                                    <th>Statistique F</th>
+                                </tr>
+                            </thead>
+                            <tbody id="anovaTableBody">
+                                </tbody>
+                        </table>
+                    </div>
+
+                    <div id="math-display" class="math-steps"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="cours" class="tab-content">
+            <div class="theory-grid">
+                <div class="theory-card">
+                    <h3><i class="fas fa-vial"></i> À quoi sert l'ANOVA ?</h3>
+                    <p>L'Analyse de Variance (ANOVA) est utilisée pour tester si les moyennes de <strong>trois groupes ou plus</strong> sont égales. Elle remplace le test T de Student lorsqu'on a plus de deux groupes, pour éviter l'inflation du risque d'erreur alpha.</p>
+                    <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                        <li><strong>H₀ :</strong> μ₁ = μ₂ = μ₃ (Toutes les moyennes sont égales)</li>
+                        <li><strong>H₁ :</strong> Au moins une moyenne est différente des autres.</li>
+                    </ul>
+                </div>
+                <div class="theory-card">
+                    <h3><i class="fas fa-subscript"></i> Les Composantes du Tableau</h3>
+                    <div style="background: var(--bg-body); padding: 15px; border-radius: 8px; margin-top: 15px;">
+                        <ul style="list-style-type: none; padding: 0; line-height: 2;">
+                            <li><strong>Inter-groupes (Between) :</strong> La variance causée par le traitement (la différence entre les groupes). <em>Calculé via SSB et MSB.</em></li>
+                            <li><strong>Intra-groupes (Within) :</strong> La variance résiduelle ou l'erreur (la dispersion à l'intérieur de chaque groupe). <em>Calculé via SSW et MSW.</em></li>
+                            <li><strong>Statistique F :</strong> C'est le ratio MSB / MSW. Si F est grand, la différence entre les groupes est significative par rapport au bruit interne.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 MM Center - Premium Statistical Tools.</p>
+    </footer>
+
+    <script>
+        // Tab switching
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
+        }
+
+        document.getElementById('anovaForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get inputs
+            const n1 = parseFloat(document.getElementById('n1').value);
+            const m1 = parseFloat(document.getElementById('m1').value);
+            const v1 = parseFloat(document.getElementById('v1').value);
+
+            const n2 = parseFloat(document.getElementById('n2').value);
+            const m2 = parseFloat(document.getElementById('m2').value);
+            const v2 = parseFloat(document.getElementById('v2').value);
+
+            const n3 = parseFloat(document.getElementById('n3').value);
+            const m3 = parseFloat(document.getElementById('m3').value);
+            const v3 = parseFloat(document.getElementById('v3').value);
+
+            const k = 3; // Number of groups
+            
+            // Step 1: N total
+            const N = n1 + n2 + n3;
+
+            // Step 2: Grand Mean (Moyenne Générale)
+            const sumTotal = (n1 * m1) + (n2 * m2) + (n3 * m3);
+            const grandMean = sumTotal / N;
+
+            // Step 3: SSB (Sum of Squares Between / Inter-groupes)
+            const ssb = (n1 * Math.pow(m1 - grandMean, 2)) + 
+                        (n2 * Math.pow(m2 - grandMean, 2)) + 
+                        (n3 * Math.pow(m3 - grandMean, 2));
+
+            // Step 4: SSW (Sum of Squares Within / Intra-groupes / Erreur)
+            const ssw = ((n1 - 1) * v1) + ((n2 - 1) * v2) + ((n3 - 1) * v3);
+
+            // Step 5: SST (Total)
+            const sst = ssb + ssw;
+
+            // Step 6: Degrees of Freedom (df)
+            const dfBetween = k - 1;
+            const dfWithin = N - k;
+            const dfTotal = N - 1;
+
+            // Step 7: Mean Squares (MS)
+            const msb = ssb / dfBetween;
+            const msw = ssw / dfWithin;
+
+            // Step 8: F-Statistic
+            const fStat = msb / msw;
+
+            // --- Fill ANOVA Table ---
+            const tbody = document.getElementById('anovaTableBody');
+            tbody.innerHTML = `
+                <tr>
+                    <td><strong>Inter-groupes</strong> (Traitements)</td>
+                    <td>${ssb.toFixed(3)}</td>
+                    <td>${dfBetween}</td>
+                    <td>${msb.toFixed(3)}</td>
+                    <td class="highlight" rowspan="2" style="text-align:center; vertical-align:middle; font-size:1.5rem;">F = ${fStat.toFixed(3)}</td>
+                </tr>
+                <tr>
+                    <td><strong>Intra-groupes</strong> (Erreur)</td>
+                    <td>${ssw.toFixed(3)}</td>
+                    <td>${dfWithin}</td>
+                    <td>${msw.toFixed(3)}</td>
+                </tr>
+                <tr>
+                    <td><strong>Total</strong></td>
+                    <td><strong>${sst.toFixed(3)}</strong></td>
+                    <td><strong>${dfTotal}</strong></td>
+                    <td>-</td>
+                    <td style="background:var(--bg-white)"></td>
+                </tr>
+            `;
+
+            // --- Math Steps Logic Display ---
+            const mathHTML = `
+                <span class="comment">/* --- 1. Moyenne Générale (X̄_g) --- */</span><br>
+                <span class="white">N = n₁ + n₂ + n₃ = ${n1} + ${n2} + ${n3} = ${N}</span><br>
+                <span class="white">X̄_g = (Σ n_i * x̄_i) / N</span><br>
+                <span class="yellow">X̄_g = ${grandMean.toFixed(4)}</span><br><br>
+
+                <span class="comment">/* --- 2. Sommes des Carrés (SS) --- */</span><br>
+                <span class="white">SS_Inter = Σ n_i * (x̄_i - X̄_g)²</span><br>
+                <span class="white">SS_Inter = ${ssb.toFixed(4)}</span><br><br>
+                
+                <span class="white">SS_Intra = Σ (n_i - 1) * s_i²</span><br>
+                <span class="white">SS_Intra = (${n1-1} * ${v1}) + (${n2-1} * ${v2}) + (${n3-1} * ${v3})</span><br>
+                <span class="white">SS_Intra = ${ssw.toFixed(4)}</span><br><br>
+
+                <span class="comment">/* --- 3. Carrés Moyens (MS) et F --- */</span><br>
+                <span class="white">MS_Inter = SS_Inter / (k - 1) = ${ssb.toFixed(4)} / ${dfBetween} = ${msb.toFixed(4)}</span><br>
+                <span class="white">MS_Intra = SS_Intra / (N - k) = ${ssw.toFixed(4)} / ${dfWithin} = ${msw.toFixed(4)}</span><br><br>
+                
+                <span class="yellow">F_Calculé = MS_Inter / MS_Intra = ${fStat.toFixed(4)}</span>
+            `;
+            
+            document.getElementById('math-display').innerHTML = mathHTML;
+
+            // Show results
+            const resultSection = document.getElementById('result-section');
+            resultSection.style.display = 'block';
+            resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    </script>
+</body>
+</html>

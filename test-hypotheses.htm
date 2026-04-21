@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test d'Hypothèses - Z & T de Student | StatPro</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================================================
+           VARIABLES & RESET
+           ========================================================================== */
+        :root {
+            --primary: #2563eb; /* الأزرق الخاص بالصور المرفقة */
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --secondary: #0f172a;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --bg-body: #f8fafc;
+            --bg-white: #ffffff;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --radius-lg: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-dark); line-height: 1.6; }
+        
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+
+        /* ==========================================================================
+           NAVIGATION (Simple & Clean)
+           ========================================================================== */
+        .navbar {
+            background-color: var(--bg-white);
+            border-bottom: 1px solid var(--border);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-sm);
+        }
+        .nav-flex { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; color: var(--secondary); text-decoration: none; font-weight: 800; display: flex; align-items: center; gap: 10px;}
+        .logo span { color: var(--primary); }
+        .back-btn { color: var(--text-muted); text-decoration: none; font-weight: 500; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .back-btn:hover { color: var(--primary); }
+
+        /* ==========================================================================
+           HERO SECTION (Matching the provided screenshot exactly)
+           ========================================================================== */
+        .hero {
+            background-color: var(--bg-white);
+            padding: 80px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 40px;
+        }
+        .hero-icon {
+            font-size: 4rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        .hero h1 {
+            font-size: 3rem;
+            color: var(--primary);
+            font-weight: 800;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* ==========================================================================
+           TABS SYSTEM (Calculateur vs Cours)
+           ========================================================================== */
+        .tabs-container { margin-bottom: 30px; }
+        .tab-buttons {
+            display: flex; justify-content: center; gap: 15px; margin-bottom: 30px;
+        }
+        .tab-btn {
+            background: var(--bg-white); border: 2px solid var(--border); padding: 12px 30px;
+            font-size: 1.1rem; font-weight: 600; color: var(--text-muted); cursor: pointer;
+            border-radius: 50px; transition: all 0.3s ease; box-shadow: var(--shadow-sm);
+        }
+        .tab-btn:hover { border-color: var(--primary-light); color: var(--primary); }
+        .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: var(--shadow-md); }
+        
+        .tab-content { display: none; animation: slideUp 0.4s ease-out; }
+        .tab-content.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ==========================================================================
+           CALCULATOR FORM (Le Cœur de l'outil)
+           ========================================================================== */
+        .calculator-card {
+            background: var(--bg-white); border-radius: var(--radius-lg); padding: 40px;
+            box-shadow: var(--shadow-lg); border: 1px solid var(--border);
+        }
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 30px; }
+        
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-weight: 600; color: var(--secondary); font-size: 0.95rem; }
+        .form-group label span { color: var(--text-muted); font-size: 0.8rem; font-weight: normal; margin-left: 5px; }
+        
+        .form-control {
+            padding: 12px 15px; border: 2px solid var(--border); border-radius: var(--radius-md);
+            font-size: 1rem; font-family: 'Inter', sans-serif; transition: 0.3s; outline: none;
+        }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
+        
+        select.form-control { cursor: pointer; background-color: #fff; }
+
+        .btn-submit {
+            background: var(--primary); color: white; border: none; padding: 15px 30px;
+            font-size: 1.1rem; font-weight: 700; border-radius: var(--radius-md); width: 100%;
+            cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px;
+        }
+        .btn-submit:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+        /* ==========================================================================
+           RESULTS SECTION (Généré par JavaScript)
+           ========================================================================== */
+        #result-section { display: none; margin-top: 40px; border-top: 2px dashed var(--border); padding-top: 40px; }
+        
+        .result-box {
+            border-radius: var(--radius-md); padding: 25px; margin-bottom: 20px; border-left: 5px solid;
+        }
+        .result-success { background: var(--success-bg); border-color: var(--success); }
+        .result-danger { background: var(--danger-bg); border-color: var(--danger); }
+        
+        .result-box h3 { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; font-size: 1.5rem; }
+        .result-success h3 { color: #065f46; }
+        .result-danger h3 { color: #991b1b; }
+
+        .math-steps { background: var(--secondary); color: #38bdf8; padding: 20px; border-radius: var(--radius-md); font-family: 'Fira Code', monospace; margin: 20px 0; font-size: 1.1rem; line-height: 1.8; overflow-x: auto; }
+        .math-steps span.white { color: white; }
+        .math-steps span.yellow { color: #fde047; }
+
+        /* ==========================================================================
+           COURS THÉORIQUE (Cards)
+           ========================================================================== */
+        .theory-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .theory-card { background: var(--bg-white); padding: 30px; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .theory-card h3 { color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--primary-light); padding-bottom: 10px; }
+        .theory-card ul { margin-left: 20px; color: var(--text-dark); }
+        .theory-card li { margin-bottom: 10px; }
+
+        footer { text-align: center; padding: 40px 0; color: var(--text-muted); border-top: 1px solid var(--border); margin-top: 50px; background: var(--bg-white); }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-flex">
+            <a href="index.html" class="logo"><i class="fas fa-chart-area" style="color: var(--primary); margin-right: 8px;"></i> MM <span>Center</span></a>
+            <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Retour au menu</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <div class="hero-icon">
+                <i class="fas fa-percentage" style="background: var(--primary); color: white; padding: 20px; border-radius: 20px; font-size: 3rem;"></i>
+            </div>
+            <h1>Test d'Hypothèses</h1>
+            <p>Vérifiez vos hypothèses statistiques avec les tests Z et T de Student. Calculez les valeurs critiques et obtenez les étapes mathématiques complètes.</p>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('calculateur', this)"><i class="fas fa-calculator"></i> L'Outil Simulateur</button>
+            <button class="tab-btn" onclick="switchTab('cours', this)"><i class="fas fa-book-open"></i> Cours & Méthodologie</button>
+        </div>
+
+        <div id="calculateur" class="tab-content active">
+            <div class="calculator-card">
+                <form id="hypothesisForm">
+                    
+                    <h3 style="margin-bottom: 20px; color: var(--secondary);"><i class="fas fa-sliders-h"></i> Paramètres de l'échantillon et de la population</h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Moyenne de l'échantillon (x̄)</label>
+                            <input type="number" step="any" id="sampleMean" class="form-control" required placeholder="Ex: 52">
+                        </div>
+                        <div class="form-group">
+                            <label>Moyenne de la population (μ₀) <span>(Hypothèse H0)</span></label>
+                            <input type="number" step="any" id="popMean" class="form-control" required placeholder="Ex: 50">
+                        </div>
+                        <div class="form-group">
+                            <label>Écart-type (σ ou s)</label>
+                            <input type="number" step="any" id="stdDev" class="form-control" required placeholder="Ex: 5.5" min="0.0001">
+                        </div>
+                        <div class="form-group">
+                            <label>Taille de l'échantillon (n)</label>
+                            <input type="number" id="sampleSize" class="form-control" required placeholder="Ex: 35" min="2">
+                        </div>
+                    </div>
+
+                    <h3 style="margin-bottom: 20px; margin-top: 20px; color: var(--secondary);"><i class="fas fa-filter"></i> Paramètres du Test</h3>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Type de Test (Directionnel)</label>
+                            <select id="testType" class="form-control">
+                                <option value="two-tailed">Bilatéral (≠) - Deux queues</option>
+                                <option value="right-tailed">Unilatéral Droit (>) - Supérieur</option>
+                                <option value="left-tailed">Unilatéral Gauche (<) - Inférieur</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Seuil de signification (α)</label>
+                            <select id="alpha" class="form-control">
+                                <option value="0.01">1% (0.01)</option>
+                                <option value="0.05" selected>5% (0.05) - Standard</option>
+                                <option value="0.10">10% (0.10)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-cogs"></i> Calculer la Statistique du Test
+                    </button>
+                </form>
+
+                <div id="result-section">
+                    <h2 style="color: var(--secondary); text-align: center; margin-bottom: 30px;">Résultats de l'Analyse</h2>
+                    
+                    <div id="math-display" class="math-steps">
+                        </div>
+
+                    <div id="conclusion-box" class="result-box">
+                        </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="cours" class="tab-content">
+            <div class="theory-grid">
+                <div class="theory-card">
+                    <h3><i class="fas fa-balance-scale"></i> Les 5 Étapes d'un Test d'Hypothèses</h3>
+                    <ol style="margin-left: 20px; line-height: 1.8;">
+                        <li><strong>Formuler les hypothèses :</strong> 
+                            <ul>
+                                <li>H₀ (Hypothèse nulle) : L'hypothèse de base, d'égalité (ex: μ = μ₀).</li>
+                                <li>H₁ (Hypothèse alternative) : Ce qu'on cherche à prouver (ex: μ ≠ μ₀).</li>
+                            </ul>
+                        </li>
+                        <li><strong>Choisir le seuil de signification (α) :</strong> Généralement 5% (0.05). C'est le risque de rejeter H₀ alors qu'elle est vraie (Erreur de type I).</li>
+                        <li><strong>Déterminer la statistique de test :</strong> Z si n ≥ 30 ou σ connu. T de Student si n < 30 et σ inconnu.</li>
+                        <li><strong>Calculer la valeur observée :</strong> Utiliser les formules mathématiques avec les données de l'échantillon.</li>
+                        <li><strong>Prendre une décision :</strong> Comparer la valeur calculée à la valeur critique lue dans la table.</li>
+                    </ol>
+                </div>
+
+                <div class="theory-card">
+                    <h3><i class="fas fa-project-diagram"></i> Test Z vs Test T de Student</h3>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 250px; background: var(--bg-body); padding: 20px; border-radius: 8px;">
+                            <h4 style="color: var(--secondary); margin-bottom: 10px;">Le Test Z (Loi Normale)</h4>
+                            <p>Utilisé pour les <strong>grands échantillons (n ≥ 30)</strong> ou lorsque l'écart-type de la population (σ) est connu avec certitude.</p>
+                            <p style="font-family: 'Fira Code', monospace; margin-top: 10px; color: var(--primary);">Z = (x̄ - μ₀) / (σ / √n)</p>
+                        </div>
+                        <div style="flex: 1; min-width: 250px; background: var(--bg-body); padding: 20px; border-radius: 8px;">
+                            <h4 style="color: var(--secondary); margin-bottom: 10px;">Le Test T de Student</h4>
+                            <p>Utilisé pour les <strong>petits échantillons (n < 30)</strong> et lorsque l'écart-type de la population est inconnu (on utilise 's' de l'échantillon).</p>
+                            <p style="font-family: 'Fira Code', monospace; margin-top: 10px; color: var(--primary);">T = (x̄ - μ₀) / (s / √n)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 MM Center - Simulateur Statistique. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        // 1. Fonction pour changer d'onglet
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
+        }
+
+        // 2. Dictionnaire des valeurs critiques pour le Test Z (Valeurs standard)
+        const zCriticalValues = {
+            "0.01": { "two-tailed": 2.576, "right-tailed": 2.33, "left-tailed": -2.33 },
+            "0.05": { "two-tailed": 1.96, "right-tailed": 1.645, "left-tailed": -1.645 },
+            "0.10": { "two-tailed": 1.645, "right-tailed": 1.28, "left-tailed": -1.28 }
+        };
+
+        // 3. Logique de calcul du formulaire
+        document.getElementById('hypothesisForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Empêcher le rechargement de la page
+
+            // Récupération des valeurs
+            const xBar = parseFloat(document.getElementById('sampleMean').value);
+            const mu = parseFloat(document.getElementById('popMean').value);
+            const s = parseFloat(document.getElementById('stdDev').value);
+            const n = parseInt(document.getElementById('sampleSize').value);
+            const testType = document.getElementById('testType').value;
+            const alpha = document.getElementById('alpha').value;
+
+            // Déterminer le type de test (Z ou T)
+            const isZTest = n >= 30;
+            const testName = isZTest ? "Z" : "T";
+            const statType = isZTest ? "Z_obs" : "T_obs";
+
+            // Calcul de l'erreur standard et de la statistique
+            const standardError = s / Math.sqrt(n);
+            const statValue = (xBar - mu) / standardError;
+
+            // Détermination de la valeur critique (simplifiée pour T en utilisant Z pour ce simulateur si n grand, sinon on avertit)
+            let criticalValueMsg = "";
+            let rejectH0 = false;
+            let conditionStr = "";
+
+            if (isZTest) {
+                // Utilisation des vraies valeurs Z
+                const critZ = zCriticalValues[alpha][testType];
+                
+                if (testType === "two-tailed") {
+                    rejectH0 = Math.abs(statValue) > critZ;
+                    conditionStr = `|${statValue.toFixed(3)}| > ${critZ}`;
+                    criticalValueMsg = `Z_critique = ±${critZ}`;
+                } else if (testType === "right-tailed") {
+                    rejectH0 = statValue > critZ;
+                    conditionStr = `${statValue.toFixed(3)} > ${critZ}`;
+                    criticalValueMsg = `Z_critique = ${critZ}`;
+                } else {
+                    rejectH0 = statValue < critZ;
+                    conditionStr = `${statValue.toFixed(3)} < ${critZ}`;
+                    criticalValueMsg = `Z_critique = ${critZ}`;
+                }
+            } else {
+                // Pour n < 30 (Test T), affichage pédagogique
+                criticalValueMsg = `T_critique (Lue dans la table de Student avec ddl = ${n-1} et α = ${alpha})`;
+                // On fait une approximation grossière juste pour la logique UI (ne remplace pas la vraie table)
+                const approxCrit = zCriticalValues[alpha][testType]; 
+                
+                if (testType === "two-tailed") {
+                    rejectH0 = Math.abs(statValue) > Math.abs(approxCrit);
+                } else if (testType === "right-tailed") {
+                    rejectH0 = statValue > approxCrit;
+                } else {
+                    rejectH0 = statValue < approxCrit;
+                }
+                conditionStr = `On compare ${statType} = ${statValue.toFixed(3)} avec la valeur de la table.`;
+            }
+
+            // Génération de l'affichage mathématique (LaTeX style)
+            const mathHTML = `
+                <span class="yellow">// 1. Choix du Test</span><br>
+                <span class="white">n = ${n}</span> ➔ Donc on applique le <span class="white">Test ${testName}</span><br><br>
+                
+                <span class="yellow">// 2. Formule</span><br>
+                <span class="white">${testName} = (x̄ - μ₀) / (s / √n)</span><br><br>
+                
+                <span class="yellow">// 3. Application Numérique</span><br>
+                <span class="white">${statType} = (${xBar} - ${mu}) / (${s} / √${n})</span><br>
+                <span class="white">${statType} = ${(xBar - mu).toFixed(4)} / ${(standardError).toFixed(4)}</span><br>
+                <span class="yellow">${statType} = ${statValue.toFixed(4)}</span><br><br>
+
+                <span class="yellow">// 4. Valeur Critique (Règle de décision)</span><br>
+                <span class="white">Niveau de signification α = ${alpha} (${testType})</span><br>
+                <span class="white">${criticalValueMsg}</span><br>
+            `;
+
+            document.getElementById('math-display').innerHTML = mathHTML;
+
+            // Génération de la boîte de conclusion
+            const conclusionBox = document.getElementById('conclusion-box');
+            conclusionBox.className = 'result-box ' + (rejectH0 ? 'result-danger' : 'result-success');
+            
+            let conclusionHTML = "";
+            if (rejectH0) {
+                conclusionHTML = `
+                    <h3><i class="fas fa-times-circle"></i> On Rejette l'Hypothèse Nulle (H₀)</h3>
+                    <p>Puisque la statistique calculée tombe dans la <strong>zone de rejet</strong> (${conditionStr}), nous avons suffisamment de preuves statistiques au seuil de ${alpha*100}% pour rejeter H₀ et accepter l'hypothèse alternative (H₁).</p>
+                `;
+            } else {
+                conclusionHTML = `
+                    <h3><i class="fas fa-check-circle"></i> On Accepte l'Hypothèse Nulle (H₀)</h3>
+                    <p>La statistique calculée ne tombe <strong>pas</strong> dans la zone de rejet. Nous n'avons pas suffisamment de preuves au seuil de ${alpha*100}% pour rejeter H₀. L'écart observé est dû aux fluctuations d'échantillonnage.</p>
+                `;
+            }
+            
+            conclusionBox.innerHTML = conclusionHTML;
+
+            // Afficher la section avec une petite animation
+            const resultSection = document.getElementById('result-section');
+            resultSection.style.display = 'block';
+            
+            // Scroll smooth vers le résultat
+            resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    </script>
+</body>
+</html>

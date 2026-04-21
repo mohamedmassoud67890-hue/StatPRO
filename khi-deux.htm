@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test du Khi-Deux (χ²) | StatPro Premium</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================================================
+           VARIABLES & RESET
+           ========================================================================== */
+        :root {
+            --primary: #2563eb; 
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --secondary: #0f172a;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --bg-body: #f8fafc;
+            --bg-white: #ffffff;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --success-bg: #ecfdf5;
+            --danger: #ef4444;
+            --danger-bg: #fef2f2;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --radius-lg: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-dark); line-height: 1.6; }
+        
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+
+        /* ==========================================================================
+           NAVIGATION 
+           ========================================================================== */
+        .navbar {
+            background-color: var(--bg-white); border-bottom: 1px solid var(--border);
+            padding: 15px 0; position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow-sm);
+        }
+        .nav-flex { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; color: var(--secondary); text-decoration: none; font-weight: 800; display: flex; align-items: center; gap: 10px;}
+        .logo span { color: var(--primary); }
+        .back-btn { color: var(--text-muted); text-decoration: none; font-weight: 500; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .back-btn:hover { color: var(--primary); }
+
+        /* ==========================================================================
+           HERO SECTION
+           ========================================================================== */
+        .hero {
+            background-color: var(--bg-white); padding: 70px 20px; text-align: center;
+            border-bottom: 1px solid var(--border); margin-bottom: 40px;
+            background-image: radial-gradient(circle at center, #eff6ff 0%, transparent 70%);
+        }
+        .hero-icon {
+            font-size: 3.5rem; margin-bottom: 25px; display: inline-flex;
+            background: linear-gradient(135deg, var(--primary), #0ea5e9);
+            color: white; padding: 25px; border-radius: 24px;
+            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+        }
+        .hero h1 {
+            font-size: 3.2rem; font-weight: 800; margin-bottom: 15px; letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 700px; margin: 0 auto; line-height: 1.8; }
+
+        /* ==========================================================================
+           TABS SYSTEM
+           ========================================================================== */
+        .tab-buttons { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .tab-btn {
+            background: var(--bg-white); border: 2px solid var(--border); padding: 12px 30px;
+            font-size: 1.05rem; font-weight: 600; color: var(--text-muted); cursor: pointer;
+            border-radius: 50px; transition: all 0.3s ease;
+        }
+        .tab-btn:hover { border-color: var(--primary-light); color: var(--primary); }
+        .tab-btn.active { background: var(--secondary); color: white; border-color: var(--secondary); box-shadow: var(--shadow-md); }
+        
+        .tab-content { display: none; animation: slideUp 0.4s ease-out; }
+        .tab-content.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ==========================================================================
+           FORM & DYNAMIC TABLE
+           ========================================================================== */
+        .calculator-card { background: var(--bg-white); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-lg); border: 1px solid var(--border); }
+        .section-title { font-size: 1.2rem; color: var(--secondary); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid var(--primary-light); padding-bottom: 10px;}
+        
+        .controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 25px; background: var(--bg-body); padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border);}
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-weight: 600; color: var(--secondary); font-size: 0.95rem; }
+        .form-control { padding: 10px 15px; border: 2px solid var(--border); border-radius: var(--radius-md); font-size: 1rem; transition: 0.3s; outline: none; }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+
+        .btn-action { background: var(--secondary); color: white; border: none; padding: 10px 20px; border-radius: var(--radius-md); cursor: pointer; font-weight: 600; transition: 0.3s; margin-top: 10px;}
+        .btn-action:hover { background: #1e293b; transform: translateY(-1px); }
+
+        .dynamic-table-wrapper { overflow-x: auto; margin-bottom: 25px; border: 1px solid var(--border); border-radius: var(--radius-md); }
+        .dynamic-table { width: 100%; border-collapse: collapse; background: var(--bg-white); text-align: center; }
+        .dynamic-table th, .dynamic-table td { padding: 12px; border: 1px solid var(--border); }
+        .dynamic-table th { background: var(--primary-light); color: var(--secondary); font-weight: 600; }
+        .dynamic-table input { width: 80px; padding: 8px; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; font-family: 'Fira Code', monospace; font-size: 1rem;}
+        .dynamic-table input:focus { border-color: var(--primary); outline: none; }
+
+        .btn-submit {
+            background: var(--primary); color: white; border: none; padding: 18px 30px;
+            font-size: 1.15rem; font-weight: 700; border-radius: var(--radius-md); width: 100%;
+            cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px;
+        }
+        .btn-submit:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+        /* ==========================================================================
+           RESULTS SECTION
+           ========================================================================== */
+        #result-section { display: none; margin-top: 40px; border-top: 2px dashed var(--border); padding-top: 40px; }
+        
+        .math-steps { background: var(--secondary); color: #38bdf8; padding: 25px; border-radius: var(--radius-md); font-family: 'Fira Code', monospace; font-size: 1.05rem; line-height: 1.8; margin-bottom: 20px; overflow-x: auto; }
+        .math-steps span.white { color: white; }
+        .math-steps span.yellow { color: #fde047; }
+        .math-steps span.comment { color: #94a3b8; font-style: italic; }
+
+        .result-box { border-radius: var(--radius-md); padding: 30px; text-align: center; border: 2px solid; }
+        .result-success { background: var(--danger-bg); border-color: var(--danger); }
+        .result-fail { background: var(--success-bg); border-color: var(--success); }
+        
+        .result-box h4 { font-size: 1.3rem; margin-bottom: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 10px;}
+        .highlight-stat { font-size: 1.2rem; font-weight: bold; background: rgba(255,255,255,0.5); padding: 5px 10px; border-radius: 6px; }
+
+        /* ==========================================================================
+           THEORY CARDS
+           ========================================================================== */
+        .theory-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .theory-card { background: var(--bg-white); padding: 30px; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .theory-card h3 { color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--primary-light); padding-bottom: 10px; }
+        
+        footer { text-align: center; padding: 40px 0; color: var(--text-muted); margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-flex">
+            <a href="#" class="logo"><i class="fas fa-chart-area" style="color: var(--primary); margin-right: 8px;"></i> MM <span>Center</span></a>
+            <a href="#" class="back-btn"><i class="fas fa-arrow-left"></i> Retour</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <div class="hero-icon">
+                <i class="fas fa-table"></i>
+            </div>
+            <h1>Test du Khi-Deux (χ²)</h1>
+            <p>Testez l'indépendance entre deux variables qualitatives. Remplissez votre tableau de contingence (effectifs observés) et laissez l'algorithme calculer les effectifs théoriques et le score χ².</p>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('calculateur', this)"><i class="fas fa-calculator"></i> Simulateur d'Indépendance</button>
+            <button class="tab-btn" onclick="switchTab('cours', this)"><i class="fas fa-book-open"></i> Rappel Théorique</button>
+        </div>
+
+        <div id="calculateur" class="tab-content active">
+            <div class="calculator-card">
+                
+                <h3 class="section-title"><i class="fas fa-cogs"></i> 1. Dimensions du Tableau</h3>
+                <div class="controls-grid">
+                    <div class="form-group">
+                        <label>Lignes (Variables A)</label>
+                        <input type="number" id="rowCount" class="form-control" value="2" min="2" max="5">
+                    </div>
+                    <div class="form-group">
+                        <label>Colonnes (Variables B)</label>
+                        <input type="number" id="colCount" class="form-control" value="2" min="2" max="5">
+                    </div>
+                    <div class="form-group">
+                        <label>Seuil de Signification (α)</label>
+                        <select id="alphaLvl" class="form-control">
+                            <option value="0.01">1% (0.01)</option>
+                            <option value="0.05" selected>5% (0.05)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="justify-content: flex-end;">
+                        <button type="button" class="btn-action" onclick="generateGrid()"><i class="fas fa-sync-alt"></i> Générer Tableau</button>
+                    </div>
+                </div>
+
+                <form id="khiForm">
+                    <h3 class="section-title"><i class="fas fa-pen-square"></i> 2. Effectifs Observés (O)</h3>
+                    <div class="dynamic-table-wrapper">
+                        <table class="dynamic-table" id="contingencyTable">
+                            </table>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-magic"></i> Lancer l'Analyse χ²
+                    </button>
+                </form>
+
+                <div id="result-section">
+                    <h2 style="color: var(--secondary); text-align: center; margin-bottom: 25px;">Rapport d'Analyse Khi-Deux</h2>
+                    
+                    <div id="math-display" class="math-steps"></div>
+                    
+                    <div id="conclusionBox" class="result-box">
+                        </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="cours" class="tab-content">
+            <div class="theory-grid">
+                <div class="theory-card">
+                    <h3><i class="fas fa-project-diagram"></i> Test d'Indépendance</h3>
+                    <p>Le test du Khi-Deux (χ²) permet de vérifier s'il existe une relation (dépendance) entre deux variables qualitatives (ex: Sexe et Préférence de couleur).</p>
+                    <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                        <li><strong>H₀ (Hypothèse Nulle) :</strong> Les deux variables sont <strong>indépendantes</strong>.</li>
+                        <li><strong>H₁ (Hypothèse Alternative) :</strong> Les deux variables sont <strong>liées (dépendantes)</strong>.</li>
+                    </ul>
+                </div>
+                <div class="theory-card">
+                    <h3><i class="fas fa-square-root-alt"></i> Formule et Décision</h3>
+                    <p>On compare les effectifs observés ($O_{ij}$) avec les effectifs théoriques attendus ($E_{ij}$) si H₀ était vraie :</p>
+                    <div style="background: var(--bg-body); padding: 15px; border-radius: 8px; margin: 15px 0; text-align: center; font-family: 'Fira Code', monospace; color: var(--primary); font-size: 1.1rem;">
+                        χ² = Σ [ (O - E)² / E ]
+                    </div>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li><strong>Effectif théorique (E) :</strong> (Total Ligne × Total Colonne) / Total Général.</li>
+                        <li><strong>Degré de liberté (df) :</strong> (Nombre de lignes - 1) × (Nombre de colonnes - 1).</li>
+                        <li><strong>Décision :</strong> Si le χ² calculé > χ² critique (table), on rejette l'indépendance (H₀).</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 MM Center - Premium Statistical Tools.</p>
+    </footer>
+
+    <script>
+        // Table des valeurs critiques du Khi-Deux (Simplifiée pour df 1 à 16)
+        const chiSquareTable = {
+            "0.05": [0, 3.841, 5.991, 7.815, 9.488, 11.070, 12.592, 14.067, 15.507, 16.919, 18.307, 19.675, 21.026, 22.362, 23.685, 24.996, 26.296],
+            "0.01": [0, 6.635, 9.210, 11.345, 13.277, 15.086, 16.812, 18.475, 20.090, 21.666, 23.209, 24.725, 26.217, 27.688, 29.141, 30.578, 32.000]
+        };
+
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
+        }
+
+        // Fonction pour générer le tableau d'inputs
+        function generateGrid() {
+            let rows = parseInt(document.getElementById('rowCount').value);
+            let cols = parseInt(document.getElementById('colCount').value);
+            let table = document.getElementById('contingencyTable');
+            
+            let html = `<thead><tr><th>Vars</th>`;
+            for(let j=0; j<cols; j++) html += `<th>Col ${j+1}</th>`;
+            html += `</tr></thead><tbody>`;
+            
+            for(let i=0; i<rows; i++) {
+                html += `<tr><th>Ligne ${i+1}</th>`;
+                for(let j=0; j<cols; j++) {
+                    html += `<td><input type="number" class="obs-input" data-row="${i}" data-col="${j}" required min="0" placeholder="0"></td>`;
+                }
+                html += `</tr>`;
+            }
+            html += `</tbody>`;
+            table.innerHTML = html;
+            
+            // Cacher les résultats précédents si on génère un nouveau tableau
+            document.getElementById('result-section').style.display = 'none';
+        }
+
+        // Initialiser avec un tableau 2x2 au chargement
+        window.onload = generateGrid;
+
+        document.getElementById('khiForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let rows = parseInt(document.getElementById('rowCount').value);
+            let cols = parseInt(document.getElementById('colCount').value);
+            let alpha = document.getElementById('alphaLvl').value;
+            
+            // 1. Lire les données observées (O)
+            let observed = [];
+            for(let i=0; i<rows; i++) {
+                observed[i] = [];
+                for(let j=0; j<cols; j++) {
+                    let val = document.querySelector(`.obs-input[data-row="${i}"][data-col="${j}"]`).value;
+                    observed[i][j] = parseFloat(val) || 0;
+                }
+            }
+
+            // 2. Calculer les totaux (Lignes, Colonnes, Grand Total)
+            let rowTotals = new Array(rows).fill(0);
+            let colTotals = new Array(cols).fill(0);
+            let grandTotal = 0;
+
+            for(let i=0; i<rows; i++) {
+                for(let j=0; j<cols; j++) {
+                    rowTotals[i] += observed[i][j];
+                    colTotals[j] += observed[i][j];
+                    grandTotal += observed[i][j];
+                }
+            }
+
+            // 3. Calculer les effectifs théoriques (E) et le Chi-Square calculé
+            let chiSquareCalc = 0;
+            let stepMath = "";
+
+            for(let i=0; i<rows; i++) {
+                for(let j=0; j<cols; j++) {
+                    let expected = (rowTotals[i] * colTotals[j]) / grandTotal;
+                    let o = observed[i][j];
+                    
+                    if(expected === 0) {
+                        alert("Erreur: Un effectif théorique est de 0. Le calcul ne peut aboutir.");
+                        return;
+                    }
+
+                    let cellChi = Math.pow(o - expected, 2) / expected;
+                    chiSquareCalc += cellChi;
+                    
+                    // Ajouter aux étapes mathématiques
+                    stepMath += `<span class="white">Cellule [${i+1},${j+1}] : E = (${rowTotals[i]} × ${colTotals[j]}) / ${grandTotal} = ${expected.toFixed(2)}</span><br>`;
+                    stepMath += `<span class="comment">  -> (O - E)² / E = (${o} - ${expected.toFixed(2)})² / ${expected.toFixed(2)} = ${cellChi.toFixed(3)}</span><br><br>`;
+                }
+            }
+
+            // 4. Degrés de liberté et Valeur critique
+            let df = (rows - 1) * (cols - 1);
+            let chiCrit = chiSquareTable[alpha][df];
+            
+            if(!chiCrit) {
+                chiCrit = "Valeur table non dispo (>16 df)"; // Fallback basique
+            }
+
+            let rejectH0 = chiSquareCalc > chiCrit;
+
+            // --- Construction de l'affichage mathématique ---
+            let mathHTML = `
+                <span class="comment">/* --- 1. Paramètres --- */</span><br>
+                <span class="white">Total Général (N) = ${grandTotal}</span><br>
+                <span class="white">Degrés de liberté (df) = (${rows} - 1) × (${cols} - 1) = ${df}</span><br>
+                <span class="white">Seuil (α) = ${alpha}</span><br><br>
+
+                <span class="comment">/* --- 2. Détail par cellule (Effectifs Théoriques et Contrib. χ²) --- */</span><br>
+                ${stepMath}
+
+                <span class="comment">/* --- 3. Synthèse --- */</span><br>
+                <span class="white">χ²_Calculé = Σ contrib = </span><span class="yellow">${chiSquareCalc.toFixed(4)}</span><br>
+                <span class="white">χ²_Critique (Table) = ${chiCrit}</span><br><br>
+
+                <span class="comment">/* --- 4. Règle de Décision --- */</span><br>
+                <span class="${rejectH0 ? 'green' : 'white'}">Condition de rejet H₀ : χ²_calc > χ²_crit</span><br>
+                <span class="${rejectH0 ? 'green' : 'white'}">Résultat : ${rejectH0 ? 'VRAI (On rejette l\'indépendance)' : 'FAUX (On ne peut pas rejeter l\'indépendance)'}</span>
+            `;
+
+            // --- Conclusion UI ---
+            let conclusionBox = document.getElementById('conclusionBox');
+            if (rejectH0) {
+                conclusionBox.className = 'result-box result-success'; // Rouge (Rejet H0 = Dépendance)
+                conclusionBox.innerHTML = `
+                    <h4 style="color: var(--danger);"><i class="fas fa-link"></i> Dépendance Significative (Rejet H₀)</h4>
+                    <p style="color: #7f1d1d;">Les données montrent qu'il existe une relation statistiquement significative (au seuil de ${alpha*100}%) entre les variables en ligne et en colonne. Elles ne sont pas indépendantes.</p>
+                    <div style="margin-top:15px; color: var(--danger);">La statistique <span class="highlight-stat">χ² = ${chiSquareCalc.toFixed(3)}</span> est supérieure à la valeur critique (${chiCrit}).</div>
+                `;
+            } else {
+                conclusionBox.className = 'result-box result-fail'; // Vert (Non-rejet = Indépendance statu quo)
+                conclusionBox.innerHTML = `
+                    <h4 style="color: var(--success);"><i class="fas fa-unlink"></i> Indépendance Maintenue (Non-rejet H₀)</h4>
+                    <p style="color: #064e3b;">Les preuves sont insuffisantes (au seuil de ${alpha*100}%) pour affirmer que les variables sont liées. Les différences entre valeurs observées et théoriques sont probables sous le hasard seul.</p>
+                    <div style="margin-top:15px; color: var(--success);">La statistique <span class="highlight-stat">χ² = ${chiSquareCalc.toFixed(3)}</span> n'atteint pas la zone de rejet (> ${chiCrit}).</div>
+                `;
+            }
+
+            document.getElementById('math-display').innerHTML = mathHTML;
+            
+            let resultSection = document.getElementById('result-section');
+            resultSection.style.display = 'block';
+            resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    </script>
+</body>
+</html>

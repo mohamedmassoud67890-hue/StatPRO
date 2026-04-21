@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Ressources Humaines (GRH) | Cours & Études de Cas</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==================== المتغيرات والإعدادات العامة ==================== */
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --primary-light: #e0e7ff;
+            --secondary: #0f172a;
+            --accent: #f59e0b;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --bg-body: #f8fafc;
+            --bg-white: #ffffff;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --danger: #ef4444;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            line-height: 1.7;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        
+        /* ==================== شريط التنقل (Navbar) ==================== */
+        .navbar {
+            background-color: var(--bg-white);
+            border-bottom: 1px solid var(--border);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .nav-flex { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--primary); text-decoration: none; font-weight: 700; }
+        .back-btn { color: var(--text-muted); text-decoration: none; font-weight: 500; }
+        .back-btn:hover { color: var(--primary); }
+
+        /* ==================== رأس الصفحة (Header) ==================== */
+        .page-header {
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 80px 0 100px;
+            text-align: center;
+        }
+        .page-header h1 { font-family: 'Playfair Display', serif; font-size: 3rem; margin-bottom: 20px; }
+        .badge { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* ==================== صناديق المحتوى ==================== */
+        .content-box {
+            background: var(--bg-white);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            margin-top: -30px; /* لرفع الصندوق الأول فوق الخلفية الزرقاء */
+            position: relative;
+            z-index: 10;
+        }
+        .content-box:not(:first-of-type) { margin-top: 0; }
+        
+        h2.section-title {
+            color: var(--secondary);
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            border-left: 5px solid var(--primary);
+            padding-left: 15px;
+        }
+
+        /* ==================== نظام التبويبات (Tabs) ==================== */
+        .tab-buttons { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 20px; overflow-x: auto; }
+        .tab-btn {
+            background: none; border: none; padding: 12px 24px; font-size: 1rem; font-weight: 600;
+            color: var(--text-muted); cursor: pointer; transition: 0.3s;
+        }
+        .tab-btn:hover { color: var(--primary); }
+        .tab-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); margin-bottom: -2px; }
+        
+        .tab-content { display: none; animation: fadeIn 0.5s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ==================== دراسة الحالة (Étude de Cas) ==================== */
+        .case-header { background: #fffbeb; border: 1px solid #fde68a; padding: 25px; border-radius: 8px; margin-bottom: 25px; }
+        .case-header h3 { color: #b45309; margin-bottom: 10px; }
+        
+        .data-table { width: 100%; border-collapse: collapse; margin-bottom: 25px; }
+        .data-table th, .data-table td { border: 1px solid var(--border); padding: 12px; text-align: left; }
+        .data-table th { background: var(--secondary); color: white; }
+        .data-table tr:nth-child(even) { background: var(--bg-body); }
+
+        /* ==================== الأكورديون (الحل المخفي) ==================== */
+        .accordion-btn {
+            width: 100%; background: var(--bg-white); border: 1px solid var(--border); padding: 18px;
+            font-size: 1.1rem; font-weight: 600; color: var(--primary-dark); cursor: pointer;
+            display: flex; justify-content: space-between; border-radius: 8px; transition: 0.3s;
+        }
+        .accordion-btn:hover { background: var(--bg-body); }
+        .accordion-content {
+            max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out;
+            background: var(--bg-body); border-radius: 0 0 8px 8px;
+        }
+        .accordion-inner { padding: 25px; border: 1px solid var(--border); border-top: none; }
+
+        /* ==================== الروابط الخارجية ==================== */
+        .grid-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .link-card {
+            display: flex; align-items: center; gap: 15px; padding: 20px;
+            background: var(--bg-white); border: 1px solid var(--border); border-radius: 8px;
+            text-decoration: none; color: var(--text-main); transition: 0.3s;
+        }
+        .link-card:hover { transform: translateY(-5px); border-color: var(--primary); box-shadow: var(--shadow); }
+        .link-icon { width: 50px; height: 50px; background: var(--primary-light); color: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+
+        footer { background: var(--secondary); color: #94a3b8; text-align: center; padding: 40px 0; margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-flex">
+            <a href="index.html" class="logo"><i class="fas fa-users-cog"></i> StatPro RH.</a>
+            <a href="index.html" class="back-btn"><i class="fas fa-arrow-left"></i> Retour à l'accueil</a>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="container">
+            <span class="badge">Module Management</span>
+            <h1>Gestion des Ressources Humaines</h1>
+            <p style="font-size: 1.2rem; opacity: 0.9;">Devenez un expert dans le pilotage du capital humain : Concepts théoriques et résolution d'études de cas complexes.</p>
+        </div>
+    </header>
+
+    <main class="container">
+        
+        <section class="content-box">
+            <h2 class="section-title">1. Les Processus Clés de la GRH</h2>
+            <p style="margin-bottom: 20px;">Découvrez les 4 piliers fondamentaux de la fonction RH. (Cliquez sur les onglets pour naviguer)</p>
+
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="openTab(event, 'recrutement')">Recrutement</button>
+                <button class="tab-btn" onclick="openTab(event, 'formation')">Formation</button>
+                <button class="tab-btn" onclick="openTab(event, 'evaluation')">Évaluation</button>
+                <button class="tab-btn" onclick="openTab(event, 'remuneration')">Rémunération</button>
+            </div>
+
+            <div id="recrutement" class="tab-content active">
+                <h3 style="color: var(--primary);">Le Recrutement et l'Intégration</h3>
+                <p>Processus stratégique visant à attirer et retenir les meilleurs talents. Il inclut :</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li><strong>Sourcing :</strong> Recherche active sur les réseaux sociaux professionnels (ex: LinkedIn).</li>
+                    <li><strong>Sélection :</strong> Entretiens, tests psychotechniques, mises en situation.</li>
+                    <li><strong>Onboarding :</strong> Phase d'intégration cruciale pour la fidélisation du nouvel employé.</li>
+                </ul>
+            </div>
+
+            <div id="formation" class="tab-content">
+                <h3 style="color: var(--primary);">La Formation et le Développement</h3>
+                <p>C'est l'investissement dans le "Capital Humain" pour faire face aux mutations de l'environnement.</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li><strong>Ingénierie de formation :</strong> Analyse des besoins et conception du plan de formation.</li>
+                    <li><strong>Bilan de compétences :</strong> Outil d'évolution professionnelle pour les salariés.</li>
+                </ul>
+            </div>
+
+            <div id="evaluation" class="tab-content">
+                <h3 style="color: var(--primary);">L'Évaluation des Performances</h3>
+                <p>Mesure de la contribution du salarié aux objectifs de l'entreprise.</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li><strong>Entretien Annuel :</strong> Le moment clé pour fixer les objectifs de l'année N+1.</li>
+                    <li><strong>Méthode 360° :</strong> Évaluation par les pairs, les subordonnés et les managers.</li>
+                </ul>
+            </div>
+
+            <div id="remuneration" class="tab-content">
+                <h3 style="color: var(--primary);">La Politique de Rémunération</h3>
+                <p>Doit respecter deux principes : l'équité interne et la compétitivité externe sur le marché.</p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li><strong>Fixe vs Variable :</strong> Salaire de base + primes de performance.</li>
+                    <li><strong>Avantages sociaux :</strong> Mutuelle, retraite complémentaire, flexibilité du temps de travail.</li>
+                </ul>
+            </div>
+        </section>
+
+        <section class="content-box">
+            <h2 class="section-title">2. Méthodologie : Étude de Cas Pratique</h2>
+            
+            <div class="case-header">
+                <h3><i class="fas fa-briefcase"></i> Cas d'entreprise : "TechSolutions SARL"</h3>
+                <p><strong>Contexte :</strong> L'entreprise fait face à une crise sociale. Le nouveau DRH vous présente ce tableau de bord :</p>
+            </div>
+
+            <table class="data-table">
+                <tr>
+                    <th>Indicateur RH</th>
+                    <th>Année N-2</th>
+                    <th>Année N-1</th>
+                    <th>Année N (Actuelle)</th>
+                </tr>
+                <tr>
+                    <td>Taux de Turnover (Départs)</td>
+                    <td>8 %</td>
+                    <td>15 %</td>
+                    <td style="color: var(--danger); font-weight: bold;">28 %</td>
+                </tr>
+                <tr>
+                    <td>Taux d'absentéisme</td>
+                    <td>3 %</td>
+                    <td>5 %</td>
+                    <td style="color: var(--danger); font-weight: bold;">9 %</td>
+                </tr>
+                <tr>
+                    <td>Budget Formation (% MS)</td>
+                    <td>2.5 %</td>
+                    <td>1.0 %</td>
+                    <td>0.5 %</td>
+                </tr>
+            </table>
+
+            <p><strong>Questions de l'examen :</strong></p>
+            <ol style="margin-left: 20px; margin-bottom: 25px;">
+                <li>Posez un diagnostic sur la situation de l'entreprise.</li>
+                <li>Identifiez les causes probables.</li>
+                <li>Proposez un plan d'action d'urgence.</li>
+            </ol>
+
+            <button class="accordion-btn" onclick="toggleAccordion(this)">
+                <span><i class="fas fa-check-circle" style="color: var(--success);"></i> Voir le Corrigé Type</span>
+                <i class="fas fa-chevron-down"></i>
+            </button>
+            
+            <div class="accordion-content">
+                <div class="accordion-inner">
+                    <h4 style="color: var(--primary); margin-bottom: 10px;">1. Diagnostic Social</h4>
+                    <p>Le climat est fortement dégradé. L'explosion du turnover (28%) montre une <strong>incapacité à fidéliser les talents</strong>. Le taux d'absentéisme (9%) est un indicateur alarmant de <strong>démotivation ou de mal-être au travail</strong>.</p>
+                    
+                    <h4 style="color: var(--primary); margin: 20px 0 10px;">2. Causes Probables</h4>
+                    <p>La chute drastique du budget formation (de 2.5% à 0.5%) crée un sentiment de stagnation chez les employés. De plus, l'absentéisme peut cacher des problèmes de management toxique ou de surcharge de travail.</p>
+                    
+                    <h4 style="color: var(--primary); margin: 20px 0 10px;">3. Plan d'Action (Recommandations)</h4>
+                    <ul style="margin-left: 20px;">
+                        <li><strong>Urgence :</strong> Geler les départs via des "Stay Interviews" (Entretiens de fidélisation).</li>
+                        <li><strong>Action :</strong> Lancer un audit du climat social (enquête anonyme) pour comprendre l'absentéisme.</li>
+                        <li><strong>Stratégie :</strong> Débloquer immédiatement un budget de formation ciblé pour remobiliser les équipes.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-box" style="background: transparent; border: none; box-shadow: none; padding: 0;">
+            <h2 class="section-title">3. Ressources & Outils Externes</h2>
+            
+            <div class="grid-links">
+                <a href="https://fr.linkedin.com/learning/" target="_blank" class="link-card">
+                    <div class="link-icon"><i class="fab fa-linkedin-in"></i></div>
+                    <div>
+                        <h4 style="margin-bottom: 5px;">LinkedIn Learning</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Cours certifiants sur les pratiques RH.</p>
+                    </div>
+                </a>
+                
+                <a href="https://www.focusrh.com/" target="_blank" class="link-card">
+                    <div class="link-icon"><i class="fas fa-newspaper"></i></div>
+                    <div>
+                        <h4 style="margin-bottom: 5px;">Focus RH</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Actualités et tendances du management.</p>
+                    </div>
+                </a>
+                
+                <a href="#" class="link-card">
+                    <div class="link-icon"><i class="fas fa-file-excel"></i></div>
+                    <div>
+                        <h4 style="margin-bottom: 5px;">Tableaux de bord (Excel)</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Modèles gratuits à télécharger.</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Statistiques Pro - Module GRH. Tous droits réservés.</p>
+    </footer>
+
+    <script>
+        // دالة التبويبات
+        function openTab(evt, tabName) {
+            let i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).style.display = "block";
+            setTimeout(() => { document.getElementById(tabName).classList.add("active"); }, 10);
+            evt.currentTarget.classList.add("active");
+        }
+
+        // دالة الأكورديون (عرض الحل)
+        function toggleAccordion(btn) {
+            let content = btn.nextElementSibling;
+            let icon = btn.querySelector('.fa-chevron-down');
+            
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                icon.style.transform = "rotate(0deg)";
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                icon.style.transform = "rotate(180deg)";
+            }
+        }
+    </script>
+</body>
+</html>

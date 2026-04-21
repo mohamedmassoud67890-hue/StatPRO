@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taille d'Échantillon | StatPro Premium</title>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================================================
+           VARIABLES & RESET
+           ========================================================================== */
+        :root {
+            --primary: #2563eb; 
+            --primary-hover: #1d4ed8;
+            --primary-light: #eff6ff;
+            --secondary: #0f172a;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --bg-body: #f8fafc;
+            --bg-white: #ffffff;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --radius-lg: 16px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); color: var(--text-dark); line-height: 1.6; }
+        
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 20px; }
+
+        /* ==========================================================================
+           NAVIGATION 
+           ========================================================================== */
+        .navbar {
+            background-color: var(--bg-white); border-bottom: 1px solid var(--border);
+            padding: 15px 0; position: sticky; top: 0; z-index: 1000; box-shadow: var(--shadow-sm);
+        }
+        .nav-flex { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.5rem; color: var(--secondary); text-decoration: none; font-weight: 800; display: flex; align-items: center; gap: 10px;}
+        .logo span { color: var(--primary); }
+        .back-btn { color: var(--text-muted); text-decoration: none; font-weight: 500; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
+        .back-btn:hover { color: var(--primary); }
+
+        /* ==========================================================================
+           HERO SECTION (PREMIUM DESIGN)
+           ========================================================================== */
+        .hero {
+            background-color: var(--bg-white); padding: 70px 20px; text-align: center;
+            border-bottom: 1px solid var(--border); margin-bottom: 40px;
+            background-image: radial-gradient(circle at center, #eff6ff 0%, transparent 70%);
+        }
+        .hero-icon {
+            font-size: 3.5rem; margin-bottom: 25px; display: inline-flex;
+            background: linear-gradient(135deg, var(--primary), #0ea5e9);
+            color: white; padding: 25px; border-radius: 24px;
+            box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+        }
+        .hero h1 {
+            font-size: 3.2rem; font-weight: 800; margin-bottom: 15px; letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 700px; margin: 0 auto; line-height: 1.8; }
+
+        /* ==========================================================================
+           TABS SYSTEM
+           ========================================================================== */
+        .tab-buttons { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
+        .tab-btn {
+            background: var(--bg-white); border: 2px solid var(--border); padding: 12px 30px;
+            font-size: 1.05rem; font-weight: 600; color: var(--text-muted); cursor: pointer;
+            border-radius: 50px; transition: all 0.3s ease;
+        }
+        .tab-btn:hover { border-color: var(--primary-light); color: var(--primary); }
+        .tab-btn.active { background: var(--secondary); color: white; border-color: var(--secondary); box-shadow: var(--shadow-md); }
+        
+        .tab-content { display: none; animation: slideUp 0.4s ease-out; }
+        .tab-content.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ==========================================================================
+           PREMIUM RADIO CARDS
+           ========================================================================== */
+        .section-title { font-size: 1.2rem; color: var(--secondary); margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        
+        .radio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 35px; }
+        
+        .radio-card {
+            position: relative; background: var(--bg-white); border: 2px solid var(--border);
+            border-radius: var(--radius-lg); padding: 25px 20px; text-align: center;
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; flex-direction: column; align-items: center; gap: 12px;
+        }
+        .radio-card i { font-size: 2rem; color: var(--text-muted); transition: 0.3s; }
+        .radio-card span { font-weight: 600; color: var(--text-dark); font-size: 1.05rem; }
+        .radio-card p { font-size: 0.85rem; color: var(--text-muted); margin: 0; }
+        .radio-card input { display: none; }
+        
+        .radio-card:hover { border-color: var(--primary-light); background: var(--primary-light); transform: translateY(-3px); }
+        .radio-card.active { border-color: var(--primary); background: var(--primary-light); box-shadow: 0 8px 20px rgba(37, 99, 235, 0.1); }
+        .radio-card.active i, .radio-card.active span { color: var(--primary); }
+        
+        .check-icon {
+            position: absolute; top: 15px; right: 15px; background: var(--primary); color: white;
+            width: 24px; height: 24px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 0.8rem; opacity: 0; transform: scale(0); transition: 0.3s;
+        }
+        .radio-card.active .check-icon { opacity: 1; transform: scale(1); }
+
+        /* ==========================================================================
+           FORM & INPUTS
+           ========================================================================== */
+        .calculator-card { background: var(--bg-white); border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow-lg); border: 1px solid var(--border); }
+        
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 30px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-weight: 600; color: var(--secondary); font-size: 0.95rem; }
+        
+        .form-control {
+            padding: 14px 18px; border: 2px solid var(--border); border-radius: var(--radius-md);
+            font-size: 1rem; font-family: 'Inter', sans-serif; transition: 0.3s; outline: none;
+            background-color: var(--bg-body);
+        }
+        .form-control:focus { border-color: var(--primary); background-color: var(--bg-white); box-shadow: 0 0 0 4px var(--primary-light); }
+        
+        .btn-submit {
+            background: var(--primary); color: white; border: none; padding: 18px 30px;
+            font-size: 1.15rem; font-weight: 700; border-radius: var(--radius-md); width: 100%;
+            cursor: pointer; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px;
+        }
+        .btn-submit:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+        /* ==========================================================================
+           RESULTS SECTION
+           ========================================================================== */
+        #result-section { display: none; margin-top: 40px; border-top: 2px dashed var(--border); padding-top: 40px; }
+        
+        .math-steps {
+            background: var(--secondary); color: #38bdf8; padding: 25px; border-radius: var(--radius-md);
+            font-family: 'Fira Code', monospace; font-size: 1.05rem; line-height: 1.8; margin-bottom: 20px; overflow-x: auto;
+        }
+        .math-steps span.white { color: white; }
+        .math-steps span.yellow { color: #fde047; }
+        .math-steps span.comment { color: #94a3b8; font-style: italic; }
+
+        .final-result-card {
+            background: linear-gradient(135deg, var(--success-bg), #d1fae5);
+            border: 2px solid var(--success); border-radius: var(--radius-md);
+            padding: 30px; text-align: center;
+        }
+        .final-result-card h4 { color: #065f46; font-size: 1.1rem; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .final-result-card .big-number { font-size: 3.5rem; font-weight: 800; color: var(--success); line-height: 1; }
+
+        /* ==========================================================================
+           THEORY CARDS
+           ========================================================================== */
+        .theory-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .theory-card { background: var(--bg-white); padding: 30px; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
+        .theory-card h3 { color: var(--primary); margin-bottom: 15px; border-bottom: 2px solid var(--primary-light); padding-bottom: 10px; }
+        
+        footer { text-align: center; padding: 40px 0; color: var(--text-muted); margin-top: 50px; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="container nav-flex">
+            <a href="#" class="logo"><i class="fas fa-chart-area" style="color: var(--primary); margin-right: 8px;"></i> MM <span>Center</span></a>
+            <a href="#" class="back-btn"><i class="fas fa-arrow-left"></i> Retour</a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <div class="hero-icon">
+                <i class="fas fa-users-viewfinder"></i>
+            </div>
+            <h1>Taille d'Échantillon</h1>
+            <p>Un outil premium pour estimer scientifiquement la taille (n) de votre échantillon. Basé sur la loi Normale et l'inégalité de Bienaymé-Tchebychev (IBT).</p>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="switchTab('calculateur', this)"><i class="fas fa-calculator"></i> Simulateur</button>
+            <button class="tab-btn" onclick="switchTab('cours', this)"><i class="fas fa-book-open"></i> Rappel Théorique</button>
+        </div>
+
+        <div id="calculateur" class="tab-content active">
+            <div class="calculator-card">
+                <form id="sampleSizeForm">
+                    
+                    <h3 class="section-title"><i class="fas fa-layer-group"></i> 1. Méthode d'estimation</h3>
+                    <div class="radio-grid">
+                        <label class="radio-card active" onclick="selectRadio(this, 'methodGroup')">
+                            <input type="radio" name="method" value="normale" checked>
+                            <i class="fas fa-bell"></i>
+                            <span>Loi Normale (Z)</span>
+                            <p>Pour n ≥ 30 ou distribution normale</p>
+                            <div class="check-icon"><i class="fas fa-check"></i></div>
+                        </label>
+                        <label class="radio-card" onclick="selectRadio(this, 'methodGroup')">
+                            <input type="radio" name="method" value="ibt">
+                            <i class="fas fa-balance-scale-right"></i>
+                            <span>Théorème IBT</span>
+                            <p>Inégalité de Bienaymé-Tchebychev</p>
+                            <div class="check-icon"><i class="fas fa-check"></i></div>
+                        </label>
+                    </div>
+
+                    <h3 class="section-title"><i class="fas fa-bullseye"></i> 2. Paramètre à estimer</h3>
+                    <div class="radio-grid">
+                        <label class="radio-card active" onclick="selectRadio(this, 'caseGroup'); toggleInputs();">
+                            <input type="radio" name="caseType" value="moyenne" checked>
+                            <i class="fas fa-chart-line"></i>
+                            <span>Moyenne (μ)</span>
+                            <p>Variables quantitatives (ex: poids)</p>
+                            <div class="check-icon"><i class="fas fa-check"></i></div>
+                        </label>
+                        <label class="radio-card" onclick="selectRadio(this, 'caseGroup'); toggleInputs();">
+                            <input type="radio" name="caseType" value="proportion">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Proportion (p)</span>
+                            <p>Variables qualitatives (ex: % succès)</p>
+                            <div class="check-icon"><i class="fas fa-check"></i></div>
+                        </label>
+                    </div>
+
+                    <h3 class="section-title" style="margin-top: 10px;"><i class="fas fa-sliders-h"></i> 3. Variables de calcul</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Niveau de confiance (1 - α)</label>
+                            <select id="confidence" class="form-control">
+                                <option value="0.90">90% (α = 0.10, Z = 1.645)</option>
+                                <option value="0.95" selected>95% (α = 0.05, Z = 1.96)</option>
+                                <option value="0.99">99% (α = 0.01, Z = 2.576)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Marge d'erreur tolérée (e)</label>
+                            <input type="number" step="any" id="errorMargin" class="form-control" required placeholder="Ex: 0.05 (pour 5%)">
+                        </div>
+                        
+                        <div class="form-group" id="stdDevGroup">
+                            <label>Écart-type population (σ)</label>
+                            <input type="number" step="any" id="stdDev" class="form-control" placeholder="Ex: 15">
+                        </div>
+                        
+                        <div class="form-group" id="propGroup" style="display: none;">
+                            <label>Proportion estimée (p)</label>
+                            <input type="number" step="any" id="proportion" class="form-control" placeholder="Ex: 0.5" value="0.5" max="1" min="0">
+                            <small style="color: var(--text-muted); font-size: 0.8rem; margin-top: 5px;">*Laissez 0.5 (50%) pour la taille maximale.</small>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-cogs"></i> Calculer la taille de l'échantillon
+                    </button>
+                </form>
+
+                <div id="result-section">
+                    <h2 style="color: var(--secondary); text-align: center; margin-bottom: 25px;">Résultat de l'Estimation</h2>
+                    
+                    <div id="math-display" class="math-steps"></div>
+                    
+                    <div class="final-result-card">
+                        <h4>Taille d'échantillon recommandée (n)</h4>
+                        <div id="final-n" class="big-number"></div>
+                        <p style="color: #065f46; margin-top: 10px; font-weight: 500;">individus nécessaires pour respecter vos critères.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="cours" class="tab-content">
+            <div class="theory-grid">
+                <div class="theory-card">
+                    <h3><i class="fas fa-book"></i> Lois et Théorèmes</h3>
+                    <p style="margin-bottom: 15px;">Le calcul de la taille de l'échantillon dépend des informations dont on dispose sur la population :</p>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li><strong>La Loi Normale (Z) :</strong> Utilisée lorsque la taille de l'échantillon attendue est grande (n ≥ 30) ou que la population suit une loi normale. C'est la méthode la plus précise et la plus utilisée.</li>
+                        <li><strong>L'inégalité de Bienaymé-Tchebychev (IBT) :</strong> Utilisée lorsqu'on ne connaît absolument pas la distribution de la population (distribution quelconque). Elle donne des tailles d'échantillon souvent beaucoup plus grandes (approche conservatrice).</li>
+                    </ul>
+                </div>
+                <div class="theory-card">
+                    <h3><i class="fas fa-square-root-variable"></i> Formulaire Résumé</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 15px;">
+                        <div style="background: var(--bg-body); padding: 15px; border-radius: 8px;">
+                            <h4 style="color: var(--secondary); margin-bottom: 10px;">Loi Normale</h4>
+                            <p style="font-family: monospace; color: var(--primary);">Moyenne : n = (Z * σ / e)²</p>
+                            <p style="font-family: monospace; color: var(--primary);">Proportion : n = (Z / e)² * p(1-p)</p>
+                        </div>
+                        <div style="background: var(--bg-body); padding: 15px; border-radius: 8px;">
+                            <h4 style="color: var(--secondary); margin-bottom: 10px;">Théorème IBT</h4>
+                            <p style="font-family: monospace; color: var(--primary);">Moyenne : n = σ² / (α * e²)</p>
+                            <p style="font-family: monospace; color: var(--primary);">Proportion : n = p(1-p) / (α * e²)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2026 MM Center - Premium Statistical Tools.</p>
+    </footer>
+
+    <script>
+        // 1. Navigation des TABS
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.add('active');
+        }
+
+        // 2. Gestion des boutons Radio (Premium UI)
+        function selectRadio(element, groupName) {
+            let container = element.parentElement;
+            container.querySelectorAll('.radio-card').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        // 3. Affichage dynamique des champs
+        function toggleInputs() {
+            let isMoyenne = document.querySelector('input[name="caseType"]:checked').value === 'moyenne';
+            document.getElementById('stdDevGroup').style.display = isMoyenne ? 'flex' : 'none';
+            document.getElementById('propGroup').style.display = isMoyenne ? 'none' : 'flex';
+            
+            document.getElementById('stdDev').required = isMoyenne;
+            document.getElementById('proportion').required = !isMoyenne;
+        }
+
+        // 4. Logique de Calcul Mathématique
+        const zValues = { "0.90": 1.645, "0.95": 1.96, "0.99": 2.576 };
+
+        document.getElementById('sampleSizeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            let method = document.querySelector('input[name="method"]:checked').value;
+            let caseType = document.querySelector('input[name="caseType"]:checked').value;
+            let confLevel = document.getElementById('confidence').value;
+            let alpha = 1 - parseFloat(confLevel);
+            let error = parseFloat(document.getElementById('errorMargin').value);
+            
+            let n = 0;
+            let mathHTML = "";
+
+            if(method === 'normale') {
+                let z = zValues[confLevel];
+                if(caseType === 'moyenne') {
+                    let sigma = parseFloat(document.getElementById('stdDev').value);
+                    n = Math.pow((z * sigma) / error, 2);
+                    mathHTML = `
+                        <span class="comment">/* Estimation par Loi Normale - Cas d'une Moyenne */</span><br>
+                        <span class="white">Formule : n = [ (Z_α/2 * σ) / e ]²</span><br><br>
+                        <span class="white">Z_α/2 (${confLevel*100}%) = ${z}</span><br>
+                        <span class="white">Écart-type (σ) = ${sigma}</span><br>
+                        <span class="white">Marge d'erreur (e) = ${error}</span><br><br>
+                        <span class="yellow">n = [ (${z} * ${sigma}) / ${error} ]²</span><br>
+                        <span class="yellow">n = ${n.toFixed(4)}</span>
+                    `;
+                } else {
+                    let p = parseFloat(document.getElementById('proportion').value);
+                    n = Math.pow(z / error, 2) * p * (1 - p);
+                    mathHTML = `
+                        <span class="comment">/* Estimation par Loi Normale - Cas d'une Proportion */</span><br>
+                        <span class="white">Formule : n = (Z_α/2 / e)² * p(1-p)</span><br><br>
+                        <span class="white">Z_α/2 (${confLevel*100}%) = ${z}</span><br>
+                        <span class="white">Proportion (p) = ${p}</span><br>
+                        <span class="white">Marge d'erreur (e) = ${error}</span><br><br>
+                        <span class="yellow">n = (${z} / ${error})² * ${p} * ${1-p}</span><br>
+                        <span class="yellow">n = ${n.toFixed(4)}</span>
+                    `;
+                }
+            } else if(method === 'ibt') {
+                if(caseType === 'moyenne') {
+                    let sigma = parseFloat(document.getElementById('stdDev').value);
+                    n = Math.pow(sigma, 2) / (alpha * Math.pow(error, 2));
+                    mathHTML = `
+                        <span class="comment">/* Estimation par IBT - Cas d'une Moyenne */</span><br>
+                        <span class="white">Formule : n = σ² / (α * e²)</span><br><br>
+                        <span class="white">Risque (α) = ${alpha.toFixed(2)}</span><br>
+                        <span class="white">Écart-type (σ) = ${sigma}</span><br>
+                        <span class="white">Marge d'erreur (e) = ${error}</span><br><br>
+                        <span class="yellow">n = ${Math.pow(sigma, 2)} / (${alpha.toFixed(2)} * ${Math.pow(error, 2).toFixed(6)})</span><br>
+                        <span class="yellow">n = ${n.toFixed(4)}</span>
+                    `;
+                } else {
+                    let p = parseFloat(document.getElementById('proportion').value);
+                    n = (p * (1 - p)) / (alpha * Math.pow(error, 2));
+                    mathHTML = `
+                        <span class="comment">/* Estimation par IBT - Cas d'une Proportion */</span><br>
+                        <span class="white">Formule : n = p(1-p) / (α * e²)</span><br><br>
+                        <span class="white">Risque (α) = ${alpha.toFixed(2)}</span><br>
+                        <span class="white">Proportion (p) = ${p}</span><br>
+                        <span class="white">Marge d'erreur (e) = ${error}</span><br><br>
+                        <span class="yellow">n = (${p} * ${1-p}) / (${alpha.toFixed(2)} * ${Math.pow(error, 2).toFixed(6)})</span><br>
+                        <span class="yellow">n = ${n.toFixed(4)}</span>
+                    `;
+                }
+            }
+
+            // On arrondit toujours à l'entier supérieur pour la taille d'échantillon
+            let nRounded = Math.ceil(n);
+
+            document.getElementById('math-display').innerHTML = mathHTML;
+            document.getElementById('final-n').innerText = nRounded;
+            
+            let resultSection = document.getElementById('result-section');
+            resultSection.style.display = 'block';
+            resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        
+        // Initialisation au chargement
+        toggleInputs();
+    </script>
+</body>
+</html>
